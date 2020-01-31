@@ -2,9 +2,9 @@ class Node:
   # parent is another node
   parent = None
   # value is a number
-  value = 0
+  value = None
   # path is a list of how to get here
-  path = []
+  path = None
 
   def __init__(self, parent, value, path):
     self.parent = parent

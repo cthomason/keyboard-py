@@ -1,4 +1,5 @@
 from node import Node
+from neighbour import Neighbour
 
 def createKeyboard(alphabet, row_length):
   # dictionary for fast lookup of locations
@@ -54,8 +55,88 @@ def breadthFirstSearch(start, end, keyboard):
   # create a dictionary to record all the nodes we've seen
   discovered = {}
 
+  # extract the lookup table and graph from the keyboard
   lookup = keyboard[0]
   graph = keyboard[1]
 
-  n = Node(None, 7, [])
-  return n
+  # construct the starting node
+  start_node = Node(None, start, None)
+
+  # Mark the first node as discovered
+  discovered[start] = True
+
+  # Add the first node to the queue
+  queue.append(start_node)
+
+  # Keep going until the queue is empty
+  while len(queue) > 0:
+    r = shift(queue)
+    current_node = r[0]
+    queue = r[1]
+
+    # if it's the one we're looking for then return
+    if current_node.value == end:
+      return current_node
+
+    # retrieve the location of the current node
+    location = lookup[current_node.value]
+
+    # this is the origin
+    x = location[0]
+    y = location[1]
+
+    neighbours = [
+      Neighbour(x, y - 1, "u"),
+      Neighbour(x, y + 1, "d"),
+      Neighbour(x - 1, y, "l"),
+      Neighbour(x + 1, y, "r")
+    ]
+
+    # calculate the number of columns to wrap around the cursor
+    num_cols = len(graph[y])
+    num_rows = len(graph)
+
+
+# while (!graph[numRows - 1] || !graph[numRows - 1][x]) {
+#       numRows -= 1;
+#     }
+    # since the keyboard is left aligned we may need to adjust num_rows
+    while num_rows >= 0:
+      num_rows -= 1
+
+    # now visit each neighbour
+    for neighbour in neighbours:
+      x1 = neighbour.x
+      y1 = neighbour.y
+
+      # wrap around if needed
+      if y1 < 0:
+        y1 += num_rows
+      else:
+        # we can safely use the modulo operator here because it will return the
+        # original value of y1
+        y1 %= num_rows
+
+      # wrap around if needed
+      if x1 < 0:
+        x1 += num_cols
+      else:
+        x1 %= num_cols
+
+      # construct a new node object
+      node = Node(current_node, graph[y1][x1], neighbour.direction)
+
+      # only add undiscovered nodes to the queue
+      if node.value not in discovered:
+        discovered[node.value] = True
+        queue.append(node)
+
+def shift(array):
+  # use a slice to grab the first element of the array
+  element = array[0]
+
+  # then use another slice to grab all remaining elements of the array
+  new_array = array[1:]
+
+  # return the values
+  return (element, new_array)

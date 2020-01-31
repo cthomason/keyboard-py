@@ -4,15 +4,15 @@ import json
 
 import utils
 
-# sys.argv is how you access command line args
-# take a slice from 1 to the end so we skip main.py
+# grab the command line arguments
 args = sys.argv[1:]
 # extract the filename
 filename = args[0]
 
+# initialze our output array
 output = []
 
-# now read the file
+# read the file
 with open(filename, "r+") as file:
     contents = json.load(file)
 
@@ -31,4 +31,5 @@ for c in contents:
   result = utils.shortestPathOnKeyboard(keyboard, starting_focus, word)
   output.append(result)
 
+# Finally give the output
 print(output)
